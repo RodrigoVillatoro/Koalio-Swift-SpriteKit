@@ -15,6 +15,8 @@ class GameScene: SKScene {
     var player = Player()
     var previousUpdateTime = CFTimeInterval()
     var walls = TMXLayer()
+    var hazards = TMXLayer()
+    var gameIsOver = Bool()
     
     override func didMoveToView(view: SKView) {
         
@@ -24,7 +26,8 @@ class GameScene: SKScene {
         map = JSTileMap(named: "level1.tmx")
         addChild(map)
         
-        walls = self.map.layerNamed("walls")
+        walls = map.layerNamed("walls")
+        hazards = map.layerNamed("hazards")
         
         player = Player(imageNamed: "koalio_stand")
         player.position = CGPointMake(100, 50)
@@ -34,9 +37,9 @@ class GameScene: SKScene {
     }
     
     func tileRectFromTileCoords(tileCoords: CGPoint) -> CGRect {
-        let levelHeightInPixels = self.map.mapSize.height * self.map.tileSize.height
-        let origin = CGPointMake(tileCoords.x * self.map.tileSize.width, levelHeightInPixels - ((tileCoords.y + 1) * self.map.tileSize.height))
-        return CGRectMake(origin.x, origin.y, self.map.tileSize.width, self.map.tileSize.height)
+        let levelHeightInPixels = map.mapSize.height * map.tileSize.height
+        let origin = CGPointMake(tileCoords.x * map.tileSize.width, levelHeightInPixels - ((tileCoords.y + 1) * map.tileSize.height))
+        return CGRectMake(origin.x, origin.y, map.tileSize.width, map.tileSize.height)
     }
     
     func tileGIDAtTileCoord(coord: CGPoint, layer:TMXLayer) -> NSInteger {
@@ -45,12 +48,21 @@ class GameScene: SKScene {
     }
     
     func checkForAndResolveCollisionForPlayer(player: Player, layer:TMXLayer){
+        
         let indices = [7, 1, 3, 5, 0, 2, 6, 8]
         player.onGround = false
+        
         for var i = 0; i < 8; i++ {
+        
             let tileIndex = Int(indices[i])
             let playerRect = player.collisionBoundingBox()
             let playerCoord = layer.coordForPoint(player.desiredPosition)
+            
+            if playerCoord.y >= self.map.mapSize.height - 1 {
+                gameOver(true)
+                return
+            }
+            
             let tileColumn = tileIndex % 3
             let tileRow = tileIndex / 3
             let tileCoord = CGPointMake(playerCoord.x + CGFloat(tileColumn - 1), playerCoord.y + CGFloat(tileRow - 1))
@@ -97,13 +109,83 @@ class GameScene: SKScene {
         player.position = player.desiredPosition
     }
     
+    func handleHazardCollisions(player: Player){
+        
+        if gameIsOver {
+            return
+        }
+        
+        let indices = [7, 1, 3, 5, 0, 2, 6, 8]
+        for var i = 0; i < 8; i++ {
+            let tileIndex = Int(indices[i])
+            
+            let playerRect = player.collisionBoundingBox()
+            let playerCoord = hazards.coordForPoint(player.desiredPosition)
+            
+            let tileColumn = tileIndex % 3
+            let tileRow = tileIndex / 3
+            let tileCoord = CGPointMake(playerCoord.x + CGFloat(tileColumn - 1), playerCoord.y + CGFloat(tileRow - 1))
+            
+            let gid = self.tileGIDAtTileCoord(tileCoord, layer: hazards)
+            
+            if gid != 0 {
+                let tileRect = self.tileRectFromTileCoords(tileCoord)
+                if CGRectIntersectsRect(playerRect, tileRect) {
+                    gameOver(true)
+                }
+            }
+        }
+    }
+
+    func gameOver(won: Bool){
+        
+        gameIsOver = true
+        var gameText = ""
+        
+        if won {
+            gameText = "You Won!"
+        } else {
+            gameText = "You died!!"
+        }
+        
+        let endGameLabel = SKLabelNode(fontNamed: "Marker Felt")
+        endGameLabel.text = gameText
+        endGameLabel.fontSize = 40.0
+        endGameLabel.position = CGPointMake(self.size.width / 2, self.size.height / 1.7)
+        self.addChild(endGameLabel)
+        
+        let replay = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+        replay.tag = 321
+        let replayImage = UIImage(named: "replay")
+        replay.setImage(replayImage, forState: UIControlState.Normal)
+        replay.addTarget(self, action: "replayGame", forControlEvents: UIControlEvents.TouchUpInside)
+        replay.frame = CGRectMake(self.size.width / 2 - replayImage.size.width / 2, self.size.height / 2 - replayImage.size.height / 2, replayImage.size.width, replayImage.size.height)
+        self.view.addSubview(replay)
+    }
+    
+    func replayGame() {
+        self.view.viewWithTag(321).removeFromSuperview()
+        self.view.presentScene(GameScene(size: self.scene.size))
+    }
+    
+    func setViewpointCenter(position: CGPoint) {
+        var x = returnMax(position.x, self.size.width / 2)
+        var y = returnMax(position.y, self.size.height / 2)
+        x = returnMin(x, (map.mapSize.width * map.tileSize.width) - self.size.width / 2)
+        y = returnMin(y, (map.mapSize.height * map.tileSize.height) - self.size.height / 2)
+        let actualPosition = CGPointMake(x, y)
+        let centerOfView = CGPointMake(self.size.width / 2, self.size.height / 2)
+        let viewPoint = CGPointSubtract(centerOfView, actualPosition)
+        map.position = viewPoint
+    }
+    
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         for touch: AnyObject in touches {
             var touchLocation = touch.locationInNode(self)
             if touchLocation.x > self.size.width/2 {
-                self.player.mightAsWellJump = true
+                player.mightAsWellJump = true
             } else {
-                self.player.forwardMarch = true
+                player.forwardMarch = true
             }
         }
     }
@@ -114,11 +196,11 @@ class GameScene: SKScene {
             var touchLocation = touch.locationInNode(self)
             var previousTouchLocation = touch.previousLocationInNode(self)
             if touchLocation.x > halfWidth && previousTouchLocation.x <= halfWidth {
-                self.player.forwardMarch = false
-                self.player.mightAsWellJump = true
+                player.forwardMarch = false
+                player.mightAsWellJump = true
             } else if previousTouchLocation.x > halfWidth && touchLocation.x <= halfWidth {
-                self.player.forwardMarch = true
-                self.player.mightAsWellJump = false
+                player.forwardMarch = true
+                player.mightAsWellJump = false
             }
         }
     }
@@ -127,14 +209,18 @@ class GameScene: SKScene {
         for touch: AnyObject in touches {
             var touchLocation = touch.locationInNode(self)
             if touchLocation.x < self.size.width / 2 {
-                self.player.forwardMarch = false
+                player.forwardMarch = false
             } else {
-                self.player.mightAsWellJump = false
+                player.mightAsWellJump = false
             }
         }
     }
    
     override func update(currentTime: CFTimeInterval) {
+        
+        if gameIsOver {
+            return
+        }
         
         var delta = currentTime - previousUpdateTime
         
@@ -145,7 +231,9 @@ class GameScene: SKScene {
         previousUpdateTime = currentTime
         player.updatePlayer(delta)
         
-        self.checkForAndResolveCollisionForPlayer(player, layer: walls)
+        checkForAndResolveCollisionForPlayer(player, layer: walls)
+        handleHazardCollisions(player)
+        setViewpointCenter(player.position)
         
     }
 }

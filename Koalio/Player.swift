@@ -25,23 +25,27 @@ class Player: SKSpriteNode {
         let forwardStep = CGPointMultiplyScalar(forwardMove, CGFloat(delta))
         
         velocity = CGPointAdd(velocity, gravityStep)
-        velocity = CGPointMake(velocity.x * 0.90, self.velocity.y)
+        velocity = CGPointMake(velocity.x * 0.90, velocity.y)
         
         let jumpForce = CGPointMake(0.0, 310)
-        if self.mightAsWellJump && self.onGround {
-            self.velocity = CGPointAdd(self.velocity, jumpForce)
+        let jumpCutoff: CGFloat = 150.0
+        
+        if mightAsWellJump && onGround {
+            velocity = CGPointAdd(velocity, jumpForce)
+        } else if !mightAsWellJump && velocity.y > jumpCutoff {
+            velocity = CGPointMake(velocity.x, jumpCutoff)
         }
         
-        if self.forwardMarch {
+        if forwardMarch {
             velocity = CGPointAdd(velocity, forwardStep)
         }
         
         let minMovement = CGPointMake(0.0, -450.0)
         let maxMovement = CGPointMake(120.0, 250.0)
-        velocity = CGPointMake(Clamp(self.velocity.x, minMovement.x, maxMovement.y), Clamp(self.velocity.y, minMovement.y, maxMovement.y))
+        velocity = CGPointMake(Clamp(velocity.x, minMovement.x, maxMovement.y), Clamp(velocity.y, minMovement.y, maxMovement.y))
         
         let velocityStep = CGPointMultiplyScalar(velocity, CGFloat(delta))
-        self.desiredPosition = CGPointAdd(self.position, velocityStep)
+        desiredPosition = CGPointAdd(self.position, velocityStep)
         
     }
     

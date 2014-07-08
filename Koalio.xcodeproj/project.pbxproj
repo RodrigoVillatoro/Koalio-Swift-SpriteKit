@@ -25,7 +25,9 @@
 		AFBDA8DD1969A359000EA966 /* LFCGzipUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = AFBDA8DB1969A359000EA966 /* LFCGzipUtility.m */; };
 		AFBDA8E01969A5AC000EA966 /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AFBDA8DF1969A5AC000EA966 /* libz.1.dylib */; };
 		AFBDA8E21969A915000EA966 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBDA8E11969A915000EA966 /* Player.swift */; };
-		AFBDA8E41969AD97000EA966 /* SKTutils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBDA8E31969AD97000EA966 /* SKTutils.swift */; };
+		AFBDA8E41969AD97000EA966 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBDA8E31969AD97000EA966 /* Utils.swift */; };
+		AFF4A493196C951A00D852F0 /* replay.png in Resources */ = {isa = PBXBuildFile; fileRef = AFF4A491196C951A00D852F0 /* replay.png */; };
+		AFF4A494196C951A00D852F0 /* replay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AFF4A492196C951A00D852F0 /* replay@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,7 +66,9 @@
 		AFBDA8DB1969A359000EA966 /* LFCGzipUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCGzipUtility.m; sourceTree = "<group>"; };
 		AFBDA8DF1969A5AC000EA966 /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = usr/lib/libz.1.dylib; sourceTree = SDKROOT; };
 		AFBDA8E11969A915000EA966 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		AFBDA8E31969AD97000EA966 /* SKTutils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKTutils.swift; sourceTree = "<group>"; };
+		AFBDA8E31969AD97000EA966 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		AFF4A491196C951A00D852F0 /* replay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = replay.png; path = Resourses/sprites.atlas/replay.png; sourceTree = "<group>"; };
+		AFF4A492196C951A00D852F0 /* replay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "replay@2x.png"; path = "Resourses/sprites.atlas/replay@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +117,9 @@
 				AFBDA8E11969A915000EA966 /* Player.swift */,
 				AF74618419699539001E0131 /* GameScene.swift */,
 				AF74618619699539001E0131 /* GameViewController.swift */,
+				AFBDA8E31969AD97000EA966 /* Utils.swift */,
+				AFF4A491196C951A00D852F0 /* replay.png */,
+				AFF4A492196C951A00D852F0 /* replay@2x.png */,
 				AF74618819699539001E0131 /* Main.storyboard */,
 				AF74618B19699539001E0131 /* Images.xcassets */,
 				AF74617E19699539001E0131 /* Supporting Files */,
@@ -123,7 +130,6 @@
 		AF74617E19699539001E0131 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				AFBDA8E31969AD97000EA966 /* SKTutils.swift */,
 				AF74618219699539001E0131 /* GameScene.sks */,
 				AF74617F19699539001E0131 /* Info.plist */,
 				AFBDA8D71969A359000EA966 /* Koalio-Bridging-Header.h */,
@@ -276,6 +282,8 @@
 				AF7461B119699553001E0131 /* tileSet@2x.png in Resources */,
 				AF7461AD19699553001E0131 /* level1.mp3 in Resources */,
 				AF74618C19699539001E0131 /* Images.xcassets in Resources */,
+				AFF4A493196C951A00D852F0 /* replay.png in Resources */,
+				AFF4A494196C951A00D852F0 /* replay@2x.png in Resources */,
 				AF74618319699539001E0131 /* GameScene.sks in Resources */,
 				AF74618A19699539001E0131 /* Main.storyboard in Resources */,
 				AF7461B019699553001E0131 /* tileSet.png in Resources */,
@@ -299,7 +307,7 @@
 			files = (
 				AF74618519699539001E0131 /* GameScene.swift in Sources */,
 				AFBDA8DD1969A359000EA966 /* LFCGzipUtility.m in Sources */,
-				AFBDA8E41969AD97000EA966 /* SKTutils.swift in Sources */,
+				AFBDA8E41969AD97000EA966 /* Utils.swift in Sources */,
 				AF74618719699539001E0131 /* GameViewController.swift in Sources */,
 				AF74618119699539001E0131 /* AppDelegate.swift in Sources */,
 				AFBDA8E21969A915000EA966 /* Player.swift in Sources */,

@@ -25,3 +25,10 @@ func Clamp(value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
     return value < min ? min : value > max ? max : value
 }
 
+func returnMax(a: CGFloat, b: CGFloat) -> CGFloat {
+    return a > b ? a : b
+}
+
+func returnMin(a: CGFloat, b: CGFloat) -> CGFloat {
+    return a < b ? a : b
+}
