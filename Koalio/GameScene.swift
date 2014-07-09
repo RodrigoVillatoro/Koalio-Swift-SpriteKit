@@ -8,6 +8,7 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 class GameScene: SKScene {
     
@@ -17,11 +18,14 @@ class GameScene: SKScene {
     var walls = TMXLayer()
     var hazards = TMXLayer()
     var gameIsOver = Bool()
+    var backgroundMusicPlayer = AVAudioPlayer()
     
     override func didMoveToView(view: SKView) {
         
         self.backgroundColor = SKColor(red: 0.4, green: 0.4, blue: 0.95, alpha: 1.0)
         self.userInteractionEnabled = true
+        
+        playBackgroundMusic()
         
         map = JSTileMap(named: "level1.tmx")
         addChild(map)
@@ -34,6 +38,15 @@ class GameScene: SKScene {
         player.zPosition = 15
         map.addChild(player)
         
+    }
+    
+    func playBackgroundMusic() -> () {
+        var error: NSError?
+        let backgroundMusicURL = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("level1", ofType: "mp3"))
+        backgroundMusicPlayer = AVAudioPlayer(contentsOfURL: backgroundMusicURL, error: &error)
+        backgroundMusicPlayer.numberOfLoops = -1
+        backgroundMusicPlayer.prepareToPlay()
+        backgroundMusicPlayer.play()
     }
     
     func tileRectFromTileCoords(tileCoords: CGPoint) -> CGRect {
@@ -136,10 +149,19 @@ class GameScene: SKScene {
             }
         }
     }
+    
+    func checkForWin() {
+        // 10 tiles before the map ends
+        if player.position.x > ((map.mapSize.width * map.tileSize.width) - (map.tileSize.width * 10)) {
+            self.gameOver(true)
+        }
+    }
 
     func gameOver(won: Bool){
         
         gameIsOver = true
+        self.runAction(SKAction.playSoundFileNamed("hurt.wav", waitForCompletion: false))
+        
         var gameText = ""
         
         if won {
@@ -233,6 +255,7 @@ class GameScene: SKScene {
         
         checkForAndResolveCollisionForPlayer(player, layer: walls)
         handleHazardCollisions(player)
+        checkForWin()
         setViewpointCenter(player.position)
         
     }
